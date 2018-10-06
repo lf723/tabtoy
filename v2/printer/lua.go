@@ -63,9 +63,11 @@ func (self *luaPrinter) Run(g *Globals) *Stream {
 	// local tab = {
 	stream.Printf("}\n\n")
 
+	/*
 	if !genLuaIndexCode(stream, g.CombineStruct) {
 		return stream
 	}
+	*/
 
 	// 生成枚举
 	if !genLuaEnumCode(g, stream, g.FileDescriptor) {
@@ -81,11 +83,51 @@ func printTableLua(g *Globals, stream *Stream, tab *model.Table) bool {
 
 	stream.Printf("	%s = {\n", tab.LocalFD.Name)
 
+	mainIndexFlag := false
+	keyName := ""
+	// 检查是否有MainIndex
+	for _, fd := range g.CombineStruct.Fields {
+		if fd.Name == tab.LocalFD.Name {
+			// 这个字段被限制输出
+			if fd.Complex != nil && !fd.Complex.File.MatchTag(".lua") {
+				continue
+			}
+
+			// 这个结构有索引才创建
+			if fd.Complex != nil && len(fd.Complex.Indexes) > 0 {
+
+				// 索引字段
+				for _, key := range fd.Complex.Indexes {
+					mainIndexFlag = true
+					keyName = key.Name
+					break
+				}
+			}
+
+			if mainIndexFlag == true {
+				break
+			}
+		}
+	}
+
 	// 遍历每一行
 	for rIndex, r := range tab.Recs {
 
-		// 每一行开始
-		stream.Printf("		{ ")
+		// 如果是MainIndex,需要直接加入索引
+		if mainIndexFlag == true {
+			// 遍历每一列
+			for _, node := range r.Nodes {
+				if node.Name == keyName {
+					valueNode := node.Child[0]
+					stream.Printf("		[%s] = { ", valueWrapperLua(g, node.Type, valueNode))
+					break
+				}
+			}
+		} else {
+			// 每一行开始
+			stream.Printf("		{ ")
+		}
+		
 
 		// 遍历每一列
 		for rootFieldIndex, node := range r.Nodes {
