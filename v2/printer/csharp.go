@@ -398,7 +398,7 @@ func (self *csharpPrinter) Run(g *Globals) *Stream {
 	// 遍历所有类型
 	for _, d := range g.FileDescriptor.Descriptors {
 
-		// 这给被限制输出
+		// 这里被限制输出
 		if !d.File.MatchTag(".cs") {
 			log.Infof("%s: %s", i18n.String(i18n.Printer_IgnoredByOutputTag), d.Name)
 			continue
@@ -450,7 +450,6 @@ func (self *csharpPrinter) Run(g *Globals) *Stream {
 			sm.Fields = append(sm.Fields, csField)
 
 		}
-
 	}
 
 	bf := NewStream()
