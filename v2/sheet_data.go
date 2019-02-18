@@ -146,9 +146,14 @@ func (self *DataSheet) processLine(fieldDef *model.FieldDescriptor, line *model.
 		return lineOp_Break
 	}
 
-	// #开头表示注释, 跳过
-	if strings.Index(fieldDef.Name, "#") == 0 {
+	// #开头表示注释, *表示服务端专用, 跳过
+	if strings.Index(fieldDef.Name, "#") == 0 ||  ( OUPTYPE == 0 && strings.Index(fieldDef.Name, "*") == 0 ) {
 		return lineOp_Continue
+	}
+
+	// &开头表示客户端专用
+	if OUPTYPE == 0 && strings.Index(fieldDef.Name, "&") == 0 {
+		fieldDef.Name = strings.Trim(fieldDef.Name, "&")
 	}
 
 	var rawValue string
@@ -184,12 +189,13 @@ func fieldDefGetter(index int, dataHeader, parentHeader *DataHeader) (*model.Fie
 
 	if parentHeader != nil {
 
-		if strings.Index(fieldDef.Name, "#") == 0 {
+		if strings.Index(fieldDef.Name, "#") == 0 || ( OUPTYPE == 0 && strings.Index(fieldDef.Name, "*") == 0  ) {
 			return fieldDef, true
 		}
 
-		if strings.Index(fieldDef.Name, "*") == 0 {
-			return fieldDef, true
+		// &开头表示客户端专用
+		if OUPTYPE == 0 && strings.Index(fieldDef.Name, "&") == 0 {
+			fieldDef.Name = strings.Trim(fieldDef.Name, "&")
 		}
 
 		ret, ok := parentHeader.HeaderByName[fieldDef.Name]

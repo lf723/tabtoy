@@ -60,8 +60,13 @@ func (self *DataSheet) exportColumnMajor(file *File, dataModel *model.DataModel,
 		}
 
 		// #开头表示注释, 跳过
-		if strings.Index(fieldDef.Name, "#") == 0 {
+		if strings.Index(fieldDef.Name, "#") == 0 || ( OUPTYPE == 0 && strings.Index(fieldDef.Name, "*") == 0 ) {
 			continue
+		}
+
+		// &开头表示客户端专用
+		if OUPTYPE == 0 && strings.HasPrefix(fieldDef.Name, "&") {
+			fieldDef.Name = strings.Trim(fieldDef.Name, "&")
 		}
 
 		rawValue := self.GetCellData(self.Row, ColumnMajor_ColumnValue)

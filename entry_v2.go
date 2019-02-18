@@ -45,6 +45,7 @@ func V2Entry() {
 
 	if *paramLuaOut != "" {
 		g.AddOutputType("lua", *paramLuaOut)
+		v2.OUPTYPE = 1
 	}
 
 	if *paramCSharpOut != "" {

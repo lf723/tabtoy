@@ -174,8 +174,12 @@ func (self *DataHeader) addHeaderElement(he *DataHeaderElement, localFD *model.F
 
 	var errorPos int = -1
 
-	// #开头表示注释, 跳过
-	if strings.Index(he.FieldName, "#") != 0 {
+	// #开头表示注释,*开头表示服务器专用, 跳过
+	if strings.Index(he.FieldName, "#") != 0 && !(OUPTYPE == 0 && strings.Index(he.FieldName, "*") == 0) {
+		if OUPTYPE == 0 && strings.Index(he.FieldName, "&") == 0 {
+			// &表示客户端专用
+			def.Name = strings.Trim(he.FieldName, "&")
+		}
 
 		errorPos = he.Parse(def, localFD, globalFD, self.HeaderByName)
 		if errorPos != -1 {
