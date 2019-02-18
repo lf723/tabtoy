@@ -3,7 +3,6 @@ package v2
 import (
 	"fmt"
 	"strings"
-
 	"github.com/davyxu/tabtoy/util"
 	"github.com/davyxu/tabtoy/v2/i18n"
 	"github.com/davyxu/tabtoy/v2/model"
@@ -177,7 +176,7 @@ func (self *DataHeader) addHeaderElement(he *DataHeaderElement, localFD *model.F
 
 	// #开头表示注释, *表示服务端专用, 跳过
 	if strings.Index(he.FieldName, "#") != 0 || strings.Index(he.FieldName, "*") != 0 {
-		if string.Hasprefix(def.Name, "&") {
+		if string.HasPrefix(def.Name, "&") {
 			// & 表示为客户端专用
 			def.Name = strings.Trim(def.Name, "&")
 		}

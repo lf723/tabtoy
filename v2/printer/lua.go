@@ -2,7 +2,7 @@ package printer
 
 import (
 	"fmt"
-	"strings",
+	"strings"
 	"github.com/davyxu/tabtoy/util"
 	"github.com/davyxu/tabtoy/v2/i18n"
 	"github.com/davyxu/tabtoy/v2/model"
@@ -127,10 +127,17 @@ func printTableLua(g *Globals, stream *Stream, tab *model.Table) bool {
 			// 每一行开始
 			stream.Printf("		{ ")
 		}
-		
 
 		// 遍历每一列
 		for rootFieldIndex, node := range r.Nodes {
+			if strings.HasPrefix(node.Name, "*") {
+				// * 表示为服务端专用
+				node.Name = strings.Trim(node.Name, "*")
+			}
+			else if strings.HasPrefix(node.Name, "&") {
+				// & 表示客户端专用
+				continue
+			}
 
 			if node.IsRepeated {
 				stream.Printf("%s = { ", node.Name)
@@ -175,15 +182,6 @@ func printTableLua(g *Globals, stream *Stream, tab *model.Table) bool {
 
 						// 值节点总是在第一个
 						valueNode := fieldNode.Child[0]
-						
-						if strings.Hasprefix(fieldNode.Name, "*") {
-							// * 表示为服务端专用
-							fieldNode.Name = strings.Trim(fieldNode.Name, "*")
-						}
-					    else if string.Hasprefix(fieldNode.Name, "&") {
-							// & 表示客户端专用
-							continue
-						}
 
 						stream.Printf("%s= %s", fieldNode.Name, valueWrapperLua(g, fieldNode.Type, valueNode))
 						// 结构体字段分割
