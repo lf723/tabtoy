@@ -133,8 +133,7 @@ func printTableLua(g *Globals, stream *Stream, tab *model.Table) bool {
 			if strings.HasPrefix(node.Name, "*") {
 				// * 表示为服务端专用
 				node.Name = strings.Trim(node.Name, "*")
-			}
-			else if strings.HasPrefix(node.Name, "&") {
+			} else if strings.HasPrefix(node.Name, "&") {
 				// & 表示客户端专用
 				continue
 			}

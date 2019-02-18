@@ -151,16 +151,6 @@ func (self *DataSheet) processLine(fieldDef *model.FieldDescriptor, line *model.
 		return lineOp_Continue
 	}
 
-	// *开头表示服务端专用, 跳过
-	if strings.Index(fieldDef.Name, "*") == 0 {
-		return lineOp_Continue
-	}
-
-	if string.HasPrefix(fieldDef.Name, "&") {
-		// & 表示为客户端专用
-		fieldDef.Name = strings.Trim(fieldDef.Name, "&")
-	}
-
 	var rawValue string
 	// 浮点数按本来的格式输出
 	if fieldDef.Type == model.FieldType_Float && !fieldDef.IsRepeated {
